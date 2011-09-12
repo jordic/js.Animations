@@ -17,8 +17,6 @@ random = function (n1,n2) {
 	return n1 + Math.floor(Math.random()*(n2-n1+1));
       }
 
-var sprites = []
-
 $(document).ready(function(){
 
 
@@ -27,7 +25,7 @@ $(document).ready(function(){
 	var TOX = (WIDTH/2) - 150
 	var TOY = (HEIGHT/2)
 
-	
+	var sprites = []
 	
 	// jQuery.extend(true, {}, oldObject);
 	$.extend(jQuery.GT.Sprite.prototype, {
@@ -36,81 +34,48 @@ $(document).ready(function(){
 		{
 			this.k=1;
 			this.vel = random(1,20)	
-			this.animating = true
+			var that = this
+			this.interval = setInterval(function(){
+				that.y( that.y() + that.vel )
+				that.x( that.x() + Math.sin(that.k)*5 )
+				that.k += 0.01
+				if( that.y() > HEIGHT+120 ) {
+					clearInterval(that.interval)
+					if(that.onRemove)
+						that.onRemove()
+					that.destroy()
+				}
+				
+			}, 50);
 		},
 		
 		anima: function(){
-			this.y( this.y() + this.vel )
-				this.x( this.x() + Math.sin(this.k)*5 )
-				this.k += 0.01
-				if( this.y() > HEIGHT+120 ) {
-					if(this.onRemove)
-						this.onRemove()
-					this.destroy()
-				}
 		}
 	})
 
 	$('body').mousemove(function(e){
 		//console.log(Snow)
 		//console.log( e,e.clientX, e.clientY )
-		var cual;
-		if(cual>500) cual = 0;
-		else cual = sprites.length
-		
+		var cual = sprites.length
 		sprites[cual] = $.GT.make_sprite({ x:e.clientX, y:e.clientY, sprite:'<h1>O</h1>' })
-		//sprites[cual].pt.css('opacity', Math.random())
-		sprites[cual].pt.css('color', 'rgb(126,'+random(50,255)+',126)')
+		sprites[cual].pt.css('opacity', Math.random())
 		sprites[cual].scale( 1+ Math.random()*3 )
 		sprites[cual].addChild()
 		sprites[cual].init_anima()
 		sprites[cual].onRemove = function(){
-			//delete sprites[cual]
-			//sprites.splice(cual, 1)
+			delete sprites[cual]
 			sprites[cual] = null
+			console.log(sprites)
 		}
 	
 	})
-	
-	
-	
-	function anim_loop()
-	{
-		var newarr = []
-		for(k=0;k<sprites.length; k++)
-		{
-			if(sprites[k]) {
-				sprites[k].anima()
-				//newarr.push(sprites[k])
-			} 
-		}
-		
-		//for(k=0;k<newarr.length; k++) {
-		//	sprites.splice(k, 1);
-		//}
-		
-		//console.log(sprites.length)
-		//sprites = newarr
-		requestAnimFrame(anim_loop, window)
-	}
 
-	anim_loop()
+
+	
 	
 })
 	
-
-window.requestAnimFrame = (function(){
-      return  window.requestAnimationFrame       || 
-              window.webkitRequestAnimationFrame || 
-              window.mozRequestAnimationFrame    || 
-              window.oRequestAnimationFrame      || 
-              window.msRequestAnimationFrame     || 
-              function(/* function */ callback, /* DOMElement */ element){
-                window.setTimeout(callback, 1000 / 60);
-              };
-    })();
-
-
+	
 	
 	
 </script>
