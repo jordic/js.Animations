@@ -1,0 +1,87 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"> </script>
+	<script src="js/Sprite.js"> </script>
+	<script src="js/Tween.js"> </script>
+	<title>Snow</title>
+	<style>
+		h1 { font-family:Arial; font-size:20px; }
+		body { overflow:hidden; }
+	</style>
+	
+<script>
+
+random = function (n1,n2) {		        
+	return n1 + Math.floor(Math.random()*(n2-n1+1));
+      }
+
+$(document).ready(function(){
+
+
+	var WIDTH = $(window).width() -50
+	var HEIGHT = $(window).height() -50
+	var TOX = (WIDTH/2) - 150
+	var TOY = (HEIGHT/2)
+
+	var sprites = []
+	
+	// jQuery.extend(true, {}, oldObject);
+	$.extend(jQuery.GT.Sprite.prototype, {
+		
+		init_anima: function()
+		{
+			this.k=1;
+			this.vel = random(1,20)	
+			var that = this
+			this.interval = setInterval(function(){
+				that.y( that.y() + that.vel )
+				that.x( that.x() + Math.sin(that.k)*5 )
+				that.k += 0.01
+				if( that.y() > HEIGHT+120 ) {
+					clearInterval(that.interval)
+					if(that.onRemove)
+						that.onRemove()
+					that.destroy()
+				}
+				
+			}, 50);
+		},
+		
+		anima: function(){
+		}
+	})
+
+	$('body').mousemove(function(e){
+		//console.log(Snow)
+		//console.log( e,e.clientX, e.clientY )
+		var cual = sprites.length
+		sprites[cual] = $.GT.make_sprite({ x:e.clientX, y:e.clientY, sprite:'<h1>O</h1>' })
+		sprites[cual].pt.css('opacity', Math.random())
+		sprites[cual].scale( 1+ Math.random()*3 )
+		sprites[cual].addChild()
+		sprites[cual].init_anima()
+		sprites[cual].onRemove = function(){
+			delete sprites[cual]
+			sprites[cual] = null
+			console.log(sprites)
+		}
+	
+	})
+
+
+	
+})
+	
+	
+	
+	
+</script>
+	
+<body>
+	
+	
+	
+</body>
+
+</head>

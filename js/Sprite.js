@@ -7,7 +7,7 @@
 		jQuery.GT = {}
 
 	var counter = 0;
-	jQuery.GT.Sprite = function( opts )
+	jQuery.GT.Sprite = function()
 	{
 		var def = {
 			node: 'body',
@@ -17,13 +17,16 @@
 			z: 0
 		}
 		
-		var o = this.opts = $.extend(def, opts);			
-		var ct = 0;
+		var o, ct = 0;
 		var that = this, pt;
 					
-		this.init = function() {
+		this.init = function(op) {
+		  
+		  o = that.opts = $.extend(def, op);	
+		  
 			// adds sprite to DOM
-			o.z = ++counter
+			counter++
+			o.z = counter
 			pt = that.pt = jQuery(o.sprite).attr('id', 'sprite'+counter);
 			that.id = '#sprite'+counter
 			that.pt.css({	
@@ -46,7 +49,8 @@
 			//console.log(that.pt.fn)
 			jQuery.extend( that.pt, that )
 			
-			return that.pt;
+			return that;
+			
 		}
 		
 		this.addChild = function()
@@ -82,18 +86,18 @@
 			return that; 
 			}
 		
-		z = this.init()
-		z.data('ele', this)
-		z.prototype = pt
-		return z
+		return this
+		//z.data('ele', this)
+		//z.prototype = pt
+		//return that
 				
 	}
 	
 	
 	
 	jQuery.GT.make_sprite = function( opts ) {
-		k = new jQuery.GT.Sprite(opts);
-		return k;
+		k = new jQuery.GT.Sprite();
+		return k.init(opts);
 	}
 	
 	jQuery.fn.sp = function(){
@@ -103,38 +107,38 @@
 
 	
 $.extend(jQuery.GT.Sprite.prototype, {
-// s'han d'implementar metodes per mozilla i ie.... :P
-rotate: function(angle) {
-  if(!angle) return this._rotate;
-  this._rotate = angle;
-  this.apply_transform();
-}, 
-scale: function(valx, valy) {
-  if(!valy)
-		valy = valx
-	this._scaleX = valx;
-	this._scaleY = valy;
-	this.apply_transform();
-},
-scaleX : function(v)
-{
-  if(!v) return this._scaleX;
-  this._scaleX = v;
-	this.apply_transform();
-},
-scaleY: function(v)
-{
-  if(!v) return this._scaleY;
-  this._scaleY = v;
-	this.apply_transform();
-},
-apply_transform: function()
-{
-  this.css('-webkit-transform', 'rotate('+ this._rotate +'deg) scale('+this._scaleX+','+ this._scaleY + ')')
-},
-origin: function(x,y) {
-	this.css('-webkit-transform-origin', x + 'px');
-}
+  // s'han d'implementar metodes per mozilla i ie.... :P
+  rotate: function(angle) {
+    if(!angle) return this._rotate;
+    this._rotate = angle;
+    this.apply_transform();
+  }, 
+  scale: function(valx, valy) {
+    if(!valy)
+  		valy = valx
+  	this._scaleX = valx;
+  	this._scaleY = valy;
+  	this.apply_transform();
+  },
+  scaleX : function(v)
+  {
+    if(!v) return this._scaleX;
+    this._scaleX = v;
+  	this.apply_transform();
+  },
+  scaleY: function(v)
+  {
+    if(!v) return this._scaleY;
+    this._scaleY = v;
+  	this.apply_transform();
+  },
+  apply_transform: function()
+  {
+    this.pt.css('-webkit-transform', 'rotate('+ this._rotate +'deg) scale('+this._scaleX+','+ this._scaleY + ')')
+  },
+  origin: function(x,y) {
+  	this.pt.css('-webkit-transform-origin', x + 'px');
+  }
 
 })
 	

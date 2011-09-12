@@ -14,9 +14,9 @@
 
 
 
-random = function (n1,n2) {		        
-	return n1 + Math.floor(Math.random()*(n2-n1+1));
-      }
+	random = function (n1,n2) {		        
+		return n1 + Math.floor(Math.random()*(n2-n1+1));
+	      }
 
 
 var sprites = [0], first_time=0;
@@ -30,7 +30,7 @@ $(document).ready(function(){
 	var TOX = (WIDTH/2) - 150
 	var TOY = (HEIGHT/2)
 	
-	str = "Hello, how are you?"
+	str = "Hello how do yo do?"
 	
 	for(var k=0; k<str.length; k++)
 	{
@@ -80,8 +80,12 @@ $(document).ready(function(){
 		
 			if(current==1)  start = TOX
 			else start += $('#sprite'+(current-1)).width()-1;
+			
+			console.log('posx ' + start, ' ', sprites[current].pt.text(), '   ', $('#sprite'+(current-1)).width() )
+			
 			var obj = { x: sprites[current].x(), y:sprites[current].y(), sp:sprites[current], 
 				sc:sprites[current].scaleX(), r:sprites[current].rotate() }
+			//console.log(obj)
 
 			tweens[tweens.length] = new TWEEN.Tween(obj)
 				.to({ x:start, y:TOY, sc:1, r:1 }, 500).onUpdate(function(){
