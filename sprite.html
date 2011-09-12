@@ -2,119 +2,24 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"> </script>
-
+	<link href='http://fonts.googleapis.com/css?family=Passero+One' rel='stylesheet' type='text/css'>
+	<script src="js/Sprite.js"> </script>
+	<script src="js/Tween.js"> </script>
 	<style>
-		h1 { font-family:Arial; font-size:20px; }
-		
+		h1 { font-family:'Passero One'; font-size:40px; }
+		body { overflow:hidden; }
 	</style>
 	
 	<script>
 
-(function() {	
-
-	if(!jQuery.GT)
-		jQuery.GT = {}
-
-	var counter = 0;
-	jQuery.GT.Sprite = function( opts )
-	{
-		var def = {
-			node: 'body',
-			sprite: '<h1>X</h1>',
-			x: 0, 
-			y: 0,
-			width: 30,
-			height: 30,
-			z: 0
-		}
-		
-		var o = this.opts = $.extend(def, opts);			
-		var ct = 0;
-		var that = this, pt;
-					
-		this.init = function() {
-			// adds sprite to DOM
-			o.z = ++counter
-			pt = that.pt = jQuery(o.sprite).attr('id', 'sprite'+counter);
-			that.id = '#sprite'+counter
-			that.pt.css({	
-				position:'absolute',
-				overflow: 'hidden',
-				top: o.y,
-				left: o.x, 
-				'z-index': o.z
-					})
-			that.pt.width(o.width)
-			that.pt.height(o.height)
-			that._x = o.x; that._y = o.y; that._z = o.z;
-			
-			//pt.data('item', that)
-			//console.log(that.pt.fn)
-			jQuery.extend( that.pt, that )
-			
-			return that.pt;
-		}
-		
-		this.addChild = function()
-		{
-			jQuery(o.node).append(that.pt);
-			return that;
-		}
-		
-		this.destroy = function()
-		{
-			pt.remove()
-		}
-		
-		/* x, y, z setters */
-		this.x = function(v) {
-			pt.css('left', v); 
-			that._x = v;
-			return that; 
-			}
-		this.y = function(v) { 
-			pt.css('top', v); 
-			that._y = v;
-			return that; 
-			}
-		this.z = function(v) { 
-			pt.css('z-index', v); 
-			that._z = v;
-			return that; 
-			}
-		this.hola = function()
-		{
-			alert('hola')
-		}
-			
-		z = this.init()
-		z.data('ele', this)
-		return z
-				
-	}
-	
-	
-	
-	
-	jQuery.GT.random = function (n1,n2) {		        
-		return n1 + Math.floor(Math.random()*(n2-n1+1));
-       }
-
-	jQuery.GT.make_sprite = function( opts ) {
-		k = new jQuery.GT.Sprite(opts);
-		return k;
-	}
-	
-	jQuery.fn.sp = function(){
-		return this.data('ele')
-	}
-	
-}());
 
 
+random = function (n1,n2) {		        
+	return n1 + Math.floor(Math.random()*(n2-n1+1));
+      }
 
 
-var sprites = []
+var sprites = [0], first_time=0;
 
 $(document).ready(function(){
 	
@@ -122,33 +27,90 @@ $(document).ready(function(){
 	// porbem el moviment...
 	var WIDTH = $(window).width() -50
 	var HEIGHT = $(window).height() -50
+	var TOX = (WIDTH/2) - 150
+	var TOY = (HEIGHT/2)
 	
-	str = "abcdefghijklmnopqrstuvwx"
+	str = "Hello, how are you?"
 	
 	for(var k=0; k<str.length; k++)
 	{
-		tx = jQuery.GT.random(1, WIDTH)
-		ty = jQuery.GT.random(1, HEIGHT)
+		tx = random(1, WIDTH)
+		ty = random(1, HEIGHT)
 		//console.log(k, tx, ty)
-		var p = { 
-			x: tx,  y: ty,	sprite: '<h1>' + str.substring(k, k+1)  +'</h1>'
-			}
+		ch = str.substring(k, k+1);
+		if(ch==" ")
+			p = { x: tx,  y: ty, sprite: '<h1>&nbsp;</h1>' }
+		else
+			p = { x: tx,  y: ty, sprite: '<h1>' + ch  +'</h1>' }
+		
 		var ele =  jQuery.GT.make_sprite( p )
+		scaleX = random(1, 10)
+		ele.scale( scaleX, scaleX )
+		ele.rotate( random(1, 360) )
 		ele.addChild()
-		
-		ele.click(function(){
-			
-		})
-		
+				
 		sprites.push( ele )
 	}
 	
-	/*setInterval(function(){ 
-		//una.y( una.y() + 2 )	
+	//var current = 0
+	var tweens = [], start;
+	
+	function mix()
+	{
+		var current = 1;
+		while(current<sprites.length) {
+			ele = sprites[current];
+			tx = random(1, WIDTH)
+			ty = random(1, HEIGHT)
+			ele.x( tx )
+			ele.y( ty )
+			scaleX = random(1, 10)
+			ele.scale( scaleX, scaleX );
+			ele.rotate( random(1, 360) );
+			current++;
+		}
+	}
+	
+	
+	function anima() {
+
+		var current = 1;
 		
-		}, 50)*/
+		while(current<sprites.length) {
+		
+			if(current==1)  start = TOX
+			else start += $('#sprite'+(current-1)).width()-1;
+			var obj = { x: sprites[current]._x, y:sprites[current]._y, sp:sprites[current], 
+				sc:sprites[current]._scaleX, r:sprites[current]._rotate }
+
+			tweens[tweens.length] = new TWEEN.Tween(obj)
+				.to({ x:start, y:TOY, sc:1, r:1 }, 500).onUpdate(function(){
+					this.sp.x(this.x)
+					this.sp.y(this.y)
+					this.sp.scale(this.sc)
+					this.sp.rotate(this.r)
+				}).delay(200+current*20).start()
+			
+			//Tween.get( actual.style ).to({left:start, top:200}, 500, easeIn)
+			current++
+		}
+	
+	}	
 	
 	
+	TWEEN.start()	
+	
+	$(document).click(function(){
+		if(first_time!=0)
+			mix();
+		anima()
+		first_time = 1;
+		});
+	//anima()
+	
+	window.onresize = function() {
+		mix()
+	}
 	
 
 })
