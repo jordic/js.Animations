@@ -80,8 +80,8 @@ $(document).ready(function(){
 		
 			if(current==1)  start = TOX
 			else start += $('#sprite'+(current-1)).width()-1;
-			var obj = { x: sprites[current]._x, y:sprites[current]._y, sp:sprites[current], 
-				sc:sprites[current]._scaleX, r:sprites[current]._rotate }
+			var obj = { x: sprites[current].x(), y:sprites[current].y(), sp:sprites[current], 
+				sc:sprites[current].scaleX(), r:sprites[current].rotate() }
 
 			tweens[tweens.length] = new TWEEN.Tween(obj)
 				.to({ x:start, y:TOY, sc:1, r:1 }, 500).onUpdate(function(){
